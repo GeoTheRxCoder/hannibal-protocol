@@ -1,2 +1,2 @@
 # hannibal-protocol
-Local hosted AI agent anti-virus desktop software for Windows
+Local hosted AI multi-agent anti-virus desktop software for Windows
