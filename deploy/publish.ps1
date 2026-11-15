@@ -9,6 +9,8 @@
 param([string]$Out = "$PSScriptRoot\..\artifacts\HannibalProtocol-0.6.0-beta.1",
       [string]$Configuration = "Release")
 $ErrorActionPreference = 'Stop'
+# Normalise once (drops "deploy\..") so SHA256SUMS paths are relative to the real staging folder.
+$Out = [System.IO.Path]::GetFullPath($ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Out))
 $root = Resolve-Path "$PSScriptRoot\.."
 if (-not (Test-Path "$root\deploy\trust\trust-root.json")) {
   throw "deploy\trust\trust-root.json is missing. Run: python tools\bootstrap_beta_signing.py"
