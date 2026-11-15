@@ -1,0 +1,31 @@
+@startuml
+title Hannibal Protocol SPEC-001 v0.5 — Evidence provenance and action gate
+skinparam componentStyle rectangle
+actor "Windows 11" as OS
+component "Authenticated Sentry Collector" as S
+database "Append-only Event Journal" as J
+component "Trusted Ingestion Verifier" as V
+database "Evidence Roots / Derivation DAG" as P
+component "Threat Detection" as D
+component "Graph Analysis" as G
+component "Tactical ML" as M
+component "Overwatch Safety Policy" as O
+component "Containment Broker\n(revalidates source and target)" as B
+OS --> S: Observed raw event
+S --> J: canonical identity, raw ID
+J --> V: trusted event envelope
+V --> P: verification + root IDs
+P --> D: evidence
+P --> G: derived graph hypotheses
+P --> M: anomaly rankings
+D --> O: finding + explicit roots
+G --> O: context ONLY, not corroboration
+M --> O: triage ONLY, not corroboration
+O --> B: scoped, signed-action request\nonly if evidence independent
+B --> OS: verified local-only containment
+B --> J: immutable action receipt
+note bottom of O
+Missing telemetry, uncertain lineage, stale facts,
+bad signatures or protected targets => ALERT/DENY
+end note
+@enduml

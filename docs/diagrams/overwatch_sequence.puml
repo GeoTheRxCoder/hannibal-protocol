@@ -1,0 +1,35 @@
+@startuml
+title Hannibal Protocol — suspicious outbound activity
+participant "Sentry" as S
+database "Event Journal" as J
+participant "Threat Detection" as D
+participant "Tactical ML" as M
+participant "Threat Analysis" as A
+participant "Overwatch" as O
+participant "Containment Broker" as B
+S -> J : append Process/Connection event
+par independent consumers
+  J -> D : event + evidence
+  D -> J : DetectionFinding
+else
+  J -> M : 60s lineage feature window
+  M -> J : AnomalyScore
+else
+  J -> A : process/file/network edge
+  A -> J : GraphRelationship
+end
+J -> O : incident update + evidence
+O -> O : scope check + protected target check
+O -> O : corroboration and policy evaluation
+alt policy permits temporary block
+  O -> J : PolicyDecision(allow, ttl=900s)
+  O -> B : scoped request with trusted authorization
+  B -> B : recheck target + ACL + idempotency + signatures
+  B -> J : ContainmentReceipt
+else no permitted action
+  O -> J : Alert or Observe
+end
+note over O,B
+K-Means anomaly alone never authorizes containment.
+end note
+@enduml

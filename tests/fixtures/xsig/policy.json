@@ -1,0 +1,11 @@
+{
+  "bundle_id": "xsig-policy",
+  "bundle_type": "policy",
+  "expires_ms": 1902592000000,
+  "issued_ms": 1900000000000,
+  "payload": {
+    "calibration_attested": false,
+    "mode": "simulation"
+  },
+  "version": 1
+}

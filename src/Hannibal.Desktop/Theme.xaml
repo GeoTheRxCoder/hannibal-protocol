@@ -1,0 +1,86 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Hannibal.Desktop">
+  <!-- Hannibal Protocol brand guide v1.0: palette, 8 px grid, 6 px radius, thin borders, quiet surfaces. -->
+  <Color x:Key="CarbonColor">#242622</Color>
+  <Color x:Key="NightColor">#111510</Color>
+  <Color x:Key="PaperColor">#F1EEE6</Color>
+  <Color x:Key="OliveColor">#858C35</Color>
+  <Color x:Key="LimeColor">#B5E881</Color>
+  <Color x:Key="MistColor">#DCE4D5</Color>
+
+  <SolidColorBrush x:Key="Night" Color="{StaticResource NightColor}"/>
+  <SolidColorBrush x:Key="Carbon" Color="{StaticResource CarbonColor}"/>
+  <SolidColorBrush x:Key="Panel" Color="#1F271E"/>
+  <SolidColorBrush x:Key="PanelBorder" Color="#2F392D"/>
+  <SolidColorBrush x:Key="Paper" Color="{StaticResource PaperColor}"/>
+  <SolidColorBrush x:Key="Mist" Color="{StaticResource MistColor}"/>
+  <SolidColorBrush x:Key="MistQuiet" Color="#A9B3A3"/>
+  <SolidColorBrush x:Key="Lime" Color="{StaticResource LimeColor}"/>
+  <SolidColorBrush x:Key="Olive" Color="{StaticResource OliveColor}"/>
+
+  <!-- Status colors never stand alone: every use pairs them with a shape and a text label. -->
+  <SolidColorBrush x:Key="StatusHealthy" Color="#B5E881"/>
+  <SolidColorBrush x:Key="StatusReview" Color="#D9B48A"/>
+  <SolidColorBrush x:Key="StatusHigh" Color="#E89A6E"/>
+  <SolidColorBrush x:Key="StatusInfo" Color="#74C0DE"/>
+
+  <FontFamily x:Key="Body">pack://application:,,,/Fonts/#DM Sans 9pt, Segoe UI</FontFamily>
+  <FontFamily x:Key="Mono">pack://application:,,,/Fonts/#IBM Plex Mono, Consolas</FontFamily>
+
+  <local:StatusBrushConverter x:Key="StatusBrush"/>
+  <local:StatusGlyphConverter x:Key="StatusGlyph"/>
+  <local:StatusLabelConverter x:Key="StatusLabel"/>
+  <local:TimeConverter x:Key="Time"/>
+  <local:JoinConverter x:Key="Join"/>
+  <local:EmptyToCollapsedConverter x:Key="EmptyToCollapsed"/>
+  <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+
+  <Style TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource Body}"/>
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="Foreground" Value="{StaticResource Mist}"/>
+    <Setter Property="LineHeight" Value="21"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+  <Style x:Key="H1" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+    <Setter Property="FontSize" Value="32"/><Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{StaticResource Paper}"/><Setter Property="LineHeight" Value="40"/>
+  </Style>
+  <Style x:Key="H2" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+    <Setter Property="FontSize" Value="16"/><Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Foreground" Value="{StaticResource Paper}"/><Setter Property="Margin" Value="0,0,0,8"/>
+  </Style>
+  <Style x:Key="Quiet" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+    <Setter Property="Foreground" Value="{StaticResource MistQuiet}"/>
+  </Style>
+  <!-- Uppercase and wide tracking are reserved for short technical labels. -->
+  <Style x:Key="Label" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource Mono}"/>
+    <Setter Property="FontSize" Value="12"/>
+    <Setter Property="Foreground" Value="{StaticResource MistQuiet}"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+  <Style x:Key="Figure" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+    <Setter Property="FontSize" Value="32"/><Setter Property="FontWeight" Value="Bold"/>
+    <Setter Property="Foreground" Value="{StaticResource Paper}"/><Setter Property="LineHeight" Value="40"/>
+  </Style>
+  <Style x:Key="Card" TargetType="Border">
+    <Setter Property="Background" Value="{StaticResource Panel}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource PanelBorder}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="6"/>
+    <Setter Property="Padding" Value="16"/>
+    <Setter Property="Margin" Value="0,0,0,16"/>
+  </Style>
+
+  <!-- Status chip: shape + label + color. -->
+  <DataTemplate x:Key="StatusChip">
+    <StackPanel Orientation="Horizontal">
+      <TextBlock Text="{Binding Converter={StaticResource StatusGlyph}}" FontSize="12" Margin="0,0,6,0"
+                 Foreground="{Binding Converter={StaticResource StatusBrush}}" VerticalAlignment="Center"/>
+      <TextBlock Text="{Binding Converter={StaticResource StatusLabel}}" Style="{StaticResource Label}"
+                 Foreground="{Binding Converter={StaticResource StatusBrush}}" VerticalAlignment="Center"/>
+    </StackPanel>
+  </DataTemplate>
+</ResourceDictionary>

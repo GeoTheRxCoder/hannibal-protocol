@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+  <!-- NOT COMPILED in the authoring environment (no NuGet access there). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>HannibalBroker</AssemblyName>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.*" />
+    <ProjectReference Include="../Hannibal.Windows/Hannibal.Windows.csproj" />
+
+    <Content Include="../../deploy/trust/trust-root.json" Link="trust/trust-root.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('../../deploy/trust/trust-root.json')" />
+  </ItemGroup>
+</Project>

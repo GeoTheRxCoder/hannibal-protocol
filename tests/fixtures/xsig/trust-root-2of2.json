@@ -1,0 +1,15 @@
+{
+  "keys": [
+    {
+      "keyid": "55dba6510020b722",
+      "alg": "ecdsa-p256-sha256",
+      "spki_b64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEEzLjtRk2ArfybP86YwDY00mBmPxXUWoueEeF3IafC297jlpeLzc77JMizfrKc+TdKoXdKC9gvFYcAc5CrBjD9Q=="
+    },
+    {
+      "keyid": "aa22a9322d63c2c1",
+      "alg": "ecdsa-p256-sha256",
+      "spki_b64": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEwZcHyQ0klVu6oxFV26Ut4oAaq4qsrWSGs9KMeFOz00DctPFwZOyQzTBgYpuoeeoNZLNIHwlO3CL8VN4hGCN4Gg=="
+    }
+  ],
+  "threshold": 2
+}

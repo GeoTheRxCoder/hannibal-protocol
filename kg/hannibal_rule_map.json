@@ -1,0 +1,17 @@
+{
+  "_comment": "Hand-curated references for Hannibal detection rules. Technique IDs are checked against the loaded ATT&CK bundle at build time; anything not found is reported, never invented.",
+  "rules": {
+    "R-CANARY": {"attack": ["T1486", "T1083"], "d3fend": ["D3-DF", "D3-DUC"], "summary": "Decoy file or decoy credential touched"},
+    "R-INDICATOR": {"attack": [], "d3fend": [], "summary": "Exact SHA-256 match with a signed indicator bundle"},
+    "R-PERSIST-UNTRUSTED": {"attack": ["T1547.001", "T1053.005", "T1543.003"], "d3fend": [], "summary": "Persistence change by a process without a trusted signature"},
+    "R-LINEAGE-EGRESS": {"attack": ["T1071"], "d3fend": [], "summary": "Outbound connection by a lineage under investigation"},
+    "R-ML-ANOMALY": {"attack": [], "d3fend": [], "summary": "Behavioral ranking signal; not a technique attribution"},
+    "R-GRAPH-PATH": {"attack": [], "d3fend": [], "summary": "Time-ordered restatement of other findings"}
+  },
+  "d3fend_labels": {
+    "D3-DO": "Decoy Object",
+    "D3-DF": "Decoy File",
+    "D3-DUC": "Decoy User Credential",
+    "D3-DNR": "Decoy Network Resource"
+  }
+}

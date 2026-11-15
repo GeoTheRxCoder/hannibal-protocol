@@ -1,0 +1,240 @@
+<Window x:Class="Hannibal.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Hannibal Protocol" Width="1280" Height="860" MinWidth="960" MinHeight="640"
+        Background="{StaticResource Night}" UseLayoutRounding="True" TextOptions.TextFormattingMode="Display">
+  <DockPanel>
+
+    <!-- Shell header: primary identity on the left; environment, scope and mode always visible. -->
+    <Border DockPanel.Dock="Top" Background="{StaticResource Night}" BorderBrush="{StaticResource PanelBorder}"
+            BorderThickness="0,0,0,1" Padding="24,12">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+          <!-- Approved symbol artwork (raster taken from the brand guide). Clear space = 2u on every side. -->
+          <Image Source="Assets/maneuver-reversed.png" Height="40" Margin="0,0,12,0" RenderOptions.BitmapScalingMode="HighQuality"
+                 AutomationProperties.Name="Hannibal Protocol symbol"/>
+          <TextBlock Text="HANNIBAL PROTOCOL" FontWeight="Bold" FontSize="14" Foreground="{StaticResource Paper}" VerticalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <TextBlock Text="{Binding Environment}" Style="{StaticResource Label}" Foreground="{StaticResource Lime}" HorizontalAlignment="Right"/>
+          <TextBlock Text="{Binding Snapshot.Scope}" Style="{StaticResource Label}" HorizontalAlignment="Right"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Freshness line: a stale or missing snapshot is stated, never hidden. -->
+    <Border DockPanel.Dock="Bottom" Background="{StaticResource Carbon}" Padding="24,8">
+      <DockPanel>
+        <TextBlock DockPanel.Dock="Right" Style="{StaticResource Label}"
+                   Text="{Binding Snapshot.GeneratedMs, Converter={StaticResource Time}, StringFormat=SNAPSHOT {0}}"/>
+        <TextBlock Text="{Binding StatusLine}" Style="{StaticResource Label}"/>
+      </DockPanel>
+    </Border>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+      <StackPanel MaxWidth="1400">
+        <TextBlock Text="Security overview" Style="{StaticResource H1}"/>
+        <TextBlock Text="Seven agents. One coordinated defense." Style="{StaticResource Quiet}" Margin="0,8,0,24"/>
+
+        <Border Style="{StaticResource Card}" Visibility="{Binding NoSnapshot, Converter={StaticResource BoolToVisibility}}">
+          <StackPanel>
+            <ContentControl Content="Review" ContentTemplate="{StaticResource StatusChip}"/>
+            <TextBlock Text="{Binding StatusLine}" Margin="0,8,0,0"/>
+          </StackPanel>
+        </Border>
+
+        <StackPanel Visibility="{Binding HasSnapshot, Converter={StaticResource BoolToVisibility}}">
+
+          <!-- Headline figures -->
+          <UniformGrid Columns="3" Margin="-8,0,-8,0">
+            <Border Style="{StaticResource Card}" Margin="8,0,8,16">
+              <StackPanel><TextBlock Text="Devices in scope" Style="{StaticResource Quiet}"/>
+                <TextBlock Text="{Binding Snapshot.DevicesInScope, StringFormat={}{0:00}}" Style="{StaticResource Figure}"/></StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="8,0,8,16">
+              <StackPanel><TextBlock Text="Investigations" Style="{StaticResource Quiet}"/>
+                <TextBlock Text="{Binding Snapshot.OpenInvestigations, StringFormat={}{0:00}}" Style="{StaticResource Figure}"/></StackPanel>
+            </Border>
+            <Border Style="{StaticResource Card}" Margin="8,0,8,16">
+              <StackPanel><TextBlock Text="Agents healthy" Style="{StaticResource Quiet}"/>
+                <TextBlock Style="{StaticResource Figure}">
+                  <Run Text="{Binding Snapshot.AgentsHealthy, Mode=OneWay}"/><Run Text=" / "/><Run Text="{Binding Snapshot.AgentsTotal, Mode=OneWay}"/>
+                </TextBlock></StackPanel>
+            </Border>
+          </UniformGrid>
+
+          <!-- Limits of this build, stated plainly -->
+          <Border Style="{StaticResource Card}">
+            <StackPanel>
+              <ContentControl Content="Info" ContentTemplate="{StaticResource StatusChip}" Margin="0,0,0,8"/>
+              <ItemsControl ItemsSource="{Binding Snapshot.Notices}">
+                <ItemsControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding}" Margin="0,0,0,4"/></DataTemplate></ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </Border>
+
+          <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="3*"/><ColumnDefinition Width="24"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
+
+            <!-- Investigations: evidence roots, decision, TTL and rollback stay inside the incident. -->
+            <StackPanel Grid.Column="0">
+              <TextBlock Text="Investigations" Style="{StaticResource H2}"/>
+              <TextBlock Text="No investigations are open." Style="{StaticResource Quiet}"
+                         Visibility="{Binding Snapshot.Incidents.Count, Converter={StaticResource EmptyToCollapsed}, ConverterParameter=invert}"/>
+              <ItemsControl ItemsSource="{Binding Snapshot.Incidents}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Border Style="{StaticResource Card}">
+                      <StackPanel>
+                        <DockPanel>
+                          <ContentControl DockPanel.Dock="Right" Content="{Binding Status}" ContentTemplate="{StaticResource StatusChip}"/>
+                          <TextBlock Text="{Binding Label}" Style="{StaticResource Label}" Foreground="{StaticResource Paper}"/>
+                        </DockPanel>
+                        <TextBlock Text="{Binding Sentence}" Foreground="{StaticResource Paper}" FontSize="16" Margin="0,8,0,8"/>
+                        <TextBlock Style="{StaticResource Label}">
+                          <Run Text="DECISION "/><Run Text="{Binding DecisionKind, Mode=OneWay}"/><Run Text="  /  "/><Run Text="{Binding ReasonCode, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource Label}">
+                          <Run Text="TARGET "/><Run Text="{Binding TargetKind, Mode=OneWay}"/><Run Text="  "/><Run Text="{Binding TargetKey, Mode=OneWay}"/>
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource Label}">
+                          <Run Text="LADDER RUNG "/><Run Text="{Binding Rung, Mode=OneWay}"/><Run Text="  /  EXPIRES "/><Run Text="{Binding RungExpiresMs, Mode=OneWay, Converter={StaticResource Time}}"/>
+                        </TextBlock>
+                        <TextBlock Style="{StaticResource Label}" Margin="0,0,0,8">
+                          <Run Text="ORDERING HEURISTIC (UNCALIBRATED)  severity "/><Run Text="{Binding Severity, Mode=OneWay, StringFormat=0.00}"/><Run Text="  confidence "/><Run Text="{Binding Confidence, Mode=OneWay, StringFormat=0.00}"/>
+                        </TextBlock>
+
+                        <ItemsControl ItemsSource="{Binding Claims}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                              <Border BorderBrush="{StaticResource PanelBorder}" BorderThickness="0,1,0,0" Padding="0,8">
+                                <StackPanel>
+                                  <TextBlock Text="{Binding Text}"/>
+                                  <TextBlock Style="{StaticResource Label}" Text="{Binding RootEventIds, Converter={StaticResource Join}, StringFormat=EVIDENCE ROOTS  {0}}"/>
+                                  <TextBlock Style="{StaticResource Label}" Text="{Binding References, Converter={StaticResource Join}, StringFormat=REFERENCE  {0}}"
+                                             Visibility="{Binding References, Converter={StaticResource EmptyToCollapsed}}"/>
+                                </StackPanel>
+                              </Border>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <ItemsControl ItemsSource="{Binding Actions}">
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                              <Border BorderBrush="{StaticResource Olive}" BorderThickness="1" CornerRadius="6" Padding="8" Margin="0,8,0,0">
+                                <StackPanel>
+                                  <DockPanel>
+                                    <ContentControl DockPanel.Dock="Right" Content="{Binding State}" ContentTemplate="{StaticResource StatusChip}"/>
+                                    <TextBlock Style="{StaticResource Label}" Foreground="{StaticResource Lime}">
+                                      <Run Text="SIMULATED ACTION  "/><Run Text="{Binding Type, Mode=OneWay}"/>
+                                    </TextBlock>
+                                  </DockPanel>
+                                  <TextBlock Text="No change was made to this device." Style="{StaticResource Quiet}"/>
+                                  <TextBlock Style="{StaticResource Label}" Text="{Binding ExpiresMs, Converter={StaticResource Time}, StringFormat=TTL EXPIRES  {0}}"/>
+                                  <TextBlock Style="{StaticResource Label}" Text="{Binding RollbackToken, StringFormat=ROLLBACK TOKEN  {0}}"
+                                             Visibility="{Binding RollbackToken, Converter={StaticResource EmptyToCollapsed}}"/>
+                                </StackPanel>
+                              </Border>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </StackPanel>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2">
+              <TextBlock Text="Agents" Style="{StaticResource H2}"/>
+              <Border Style="{StaticResource Card}">
+                <ItemsControl ItemsSource="{Binding Snapshot.Agents}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Margin="0,0,0,8">
+                        <DockPanel>
+                          <ContentControl DockPanel.Dock="Right" Content="{Binding Health}" ContentTemplate="{StaticResource StatusChip}"/>
+                          <TextBlock Text="{Binding Name}" Foreground="{StaticResource Paper}"/>
+                        </DockPanel>
+                        <TextBlock Text="{Binding Detail}" Style="{StaticResource Quiet}" FontSize="12" LineHeight="18"/>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </Border>
+
+              <TextBlock Text="Trust gates" Style="{StaticResource H2}"/>
+              <Border Style="{StaticResource Card}">
+                <ItemsControl ItemsSource="{Binding Snapshot.TrustGates}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Margin="0,0,0,8">
+                        <DockPanel>
+                          <ContentControl DockPanel.Dock="Right" Content="{Binding Status}" ContentTemplate="{StaticResource StatusChip}"/>
+                          <TextBlock Text="{Binding Name}" Foreground="{StaticResource Paper}"/>
+                        </DockPanel>
+                        <TextBlock Text="{Binding Detail}" Style="{StaticResource Quiet}" FontSize="12" LineHeight="18"/>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </Border>
+
+              <TextBlock Text="Approach axes" Style="{StaticResource H2}"/>
+              <Border Style="{StaticResource Card}">
+                <ItemsControl ItemsSource="{Binding Snapshot.Axes}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <DockPanel Margin="0,0,0,4">
+                        <ContentControl DockPanel.Dock="Right" Content="{Binding Status}" ContentTemplate="{StaticResource StatusChip}"/>
+                        <TextBlock Text="{Binding Axis}" Style="{StaticResource Label}" Foreground="{StaticResource Mist}"/>
+                      </DockPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </Border>
+
+              <!-- The Relay is a concept label here, per the brand guide; it is never used as a seal of approval. -->
+              <TextBlock Text="Recursive learning" Style="{StaticResource H2}"/>
+              <Border Style="{StaticResource Card}">
+                <StackPanel>
+                  <TextBlock Text="CURATE / EVALUATE / SHADOW / REVIEW" Style="{StaticResource Label}" Foreground="{StaticResource Olive}" Margin="0,0,0,8"/>
+                  <ItemsControl ItemsSource="{Binding Snapshot.Relay}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <StackPanel Margin="0,0,0,8">
+                          <DockPanel>
+                            <ContentControl DockPanel.Dock="Right" Content="{Binding Status}" ContentTemplate="{StaticResource StatusChip}"/>
+                            <TextBlock Text="{Binding Stage}" Foreground="{StaticResource Paper}"/>
+                          </DockPanel>
+                          <TextBlock Text="{Binding Detail}" Style="{StaticResource Quiet}" FontSize="12" LineHeight="18"/>
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Border>
+
+              <TextBlock Text="Record" Style="{StaticResource H2}"/>
+              <Border Style="{StaticResource Card}">
+                <StackPanel>
+                  <TextBlock Style="{StaticResource Label}">
+                    <Run Text="DECOYS  "/><Run Text="{Binding Snapshot.DecoysDeployed, Mode=OneWay}"/><Run Text=" deployed  /  "/><Run Text="{Binding Snapshot.DecoysTripped, Mode=OneWay}"/><Run Text=" touched"/>
+                  </TextBlock>
+                  <TextBlock Style="{StaticResource Label}">
+                    <Run Text="AUDIT ENTRIES  "/><Run Text="{Binding Snapshot.AuditEntries, Mode=OneWay}"/><Run Text="  /  CHAIN INTACT  "/><Run Text="{Binding Snapshot.AuditIntact, Mode=OneWay}"/>
+                  </TextBlock>
+                  <TextBlock Style="{StaticResource Label}" Text="{Binding Snapshot.AuditHead, StringFormat=HEAD  {0}}"/>
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Grid>
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</Window>

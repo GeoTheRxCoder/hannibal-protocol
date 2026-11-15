@@ -1,0 +1,38 @@
+@startuml
+title Hannibal Protocol 0.6.0-beta.1 — runtime topology (simulation build)
+skinparam shadowing false
+skinparam defaultFontName "DM Sans"
+rectangle "Windows 11" {
+  rectangle "ETW providers\n(Kernel-Process / File / Network / Registry)" as ETW
+  rectangle "Optional: native Sysmon\n(second capture channel)" as SYS
+  package "HannibalCore service\nNT SERVICE\\HannibalCore" {
+    [Collectors (MAC'd)] as COL
+    [Trusted ingestor\n(raw roots)] as ING
+    database "core.db\njournal + graph + audit chain" as CDB
+    [Sentry · Reconnaissance · ThreatDetection\nTacticalML · ThreatAnalysis] as AG
+    [Overwatch\nSafeOverwatchPolicyEngine] as OW
+    [CounterOffensive = local countermeasures\n(Maneuver ladder, decoys)] as CM
+  }
+  package "HannibalBroker service (LocalSystem)\nTHE RIBAT — simulation only" {
+    [Re-verification\nscope · protected targets · own bundles · file re-hash] as RV
+    database "broker.db\nintent log + audit chain" as BDB
+  }
+  [HannibalDesktop (unprivileged, read-only)] as UI
+  folder "bundles/\nsigned policy · indicators · model" as BUN
+  file "status/snapshot.json" as SNAP
+}
+ETW --> COL
+SYS --> COL
+COL --> ING : HMAC per observation
+ING --> CDB
+CDB --> AG
+AG --> OW
+OW --> CM
+CM --> RV : named pipe, ACL + HMAC frame\nreplay guard, no generic commands
+RV --> BDB : INTENDED → APPLIED (simulated)\n→ EXPIRED / ROLLED_BACK
+BUN --> ING : verified by Core
+BUN --> RV : verified again by Broker
+AG --> SNAP : pushed
+SNAP --> UI
+note bottom of RV : No effector in the beta.\nNothing is blocked, moved or terminated.
+@enduml

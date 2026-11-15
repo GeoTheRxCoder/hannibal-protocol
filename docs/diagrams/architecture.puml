@@ -1,0 +1,42 @@
+@startuml
+title Hannibal Protocol — local-first architecture
+skinparam componentStyle rectangle
+actor "Consumer" as User
+component "Windows Dashboard\n(Unprivileged)" as UI
+component "Local API\n(Named pipe + ACL)" as IPC
+package "Hannibal.CoreService" {
+  component "Overwatch\nPolicy Coordinator" as OW
+  component "Sentry" as S
+  component "Reconnaissance" as R
+  component "Threat Detection" as D
+  component "Tactical ML" as ML
+  component "Threat Analysis" as A
+  component "Counter Offensive" as CO
+  database "SQLite Journal +\nGraph + Decision Ledger" as DB
+}
+component "Containment Broker\n(Restricted privilege)" as CB
+component "Windows 11 APIs\n(ETW, WFP, file events)" as WIN
+cloud "Optional Cloud Gateway\n(Opt-in; signed updates)" as CL
+User --> UI
+UI --> IPC
+IPC --> OW
+S --> DB
+R --> DB
+D --> DB
+ML --> DB
+A --> DB
+CO --> DB
+DB --> OW
+OW --> CO : signed policy decision
+CO --> CB : scoped action request
+CB --> WIN : verified local control
+WIN --> S : telemetry
+WIN --> R : host posture
+OW --> CL : optional
+CL --> OW : authenticated indicators
+note right of CB
+  Revalidate target identity,
+  authorization and action expiry.
+  No arbitrary OS commands.
+end note
+@enduml

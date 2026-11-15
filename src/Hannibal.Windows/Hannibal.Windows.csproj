@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Windows-only code. Targets plain net10.0 with an assembly-level
+       SupportedOSPlatform attribute so it also type-checks on non-Windows CI. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Hannibal.Core/Hannibal.Core.csproj" />
+  </ItemGroup>
+</Project>

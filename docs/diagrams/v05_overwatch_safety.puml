@@ -1,0 +1,33 @@
+@startuml
+title Hannibal v0.5 — Time-bounded containment decision
+participant "Trusted Ingestor" as I
+participant "Detection" as D
+participant "Threat Graph" as G
+participant "Overwatch" as O
+participant "Policy Verifier" as P
+participant "Containment Broker" as B
+database "Audit Journal" as J
+I -> D: Verified raw event + root ID
+D -> G: Derived finding + same root ID
+D -> O: Verified behavior finding
+G -> O: Path hypothesis (same root)
+O -> O: Cannot count graph finding as second observation
+O -> J: Record triage + insufficient corroboration
+... Independent confirmed observation arrives ...
+I -> O: Second raw event with distinct root + channel
+O -> P: Check freshness, calibration, protection, policy
+alt any check fails
+  P --> O: Deny / alert
+  O -> J: reason and missing preconditions
+else policy may permit
+  P --> O: Authorized action candidate
+  O -> B: action request, expiry, target key
+  B -> B: Independently revalidate policy, trusted event roots,\nexact identity, system exclusions, idempotency
+  alt broker verification fails
+    B --> O: deny receipt
+  else verified
+    B --> O: receipt with rollback token
+  end
+  O -> J: decision, broker outcome and evidence roots
+end
+@enduml

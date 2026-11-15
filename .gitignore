@@ -1,0 +1,11 @@
+bin/
+obj/
+artifacts/
+__pycache__/
+.pytest_cache/
+*.key.pem
+signing-workspace/
+ci-signing/
+drill-out/
+hannibal-drill/
+deploy/trust/trust-root.json

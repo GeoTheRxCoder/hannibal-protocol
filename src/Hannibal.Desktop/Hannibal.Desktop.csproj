@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- NOT COMPILED in the authoring environment (WPF needs the Windows Desktop SDK). -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>HannibalDesktop</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Hannibal.Core/Hannibal.Core.csproj" />
+    <Resource Include="Assets/maneuver-reversed.png" />
+    <!-- OFL fonts, see Fonts/README.md. The UI falls back to Segoe UI / Consolas if a file is missing. -->
+    <Resource Include="Fonts/*.ttf" />
+  </ItemGroup>
+</Project>

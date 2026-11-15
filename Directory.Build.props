@@ -1,0 +1,11 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.6.0-beta.1</Version>
+    <Company>GneissLife Innovations</Company>
+    <Product>Hannibal Protocol</Product>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+</Project>

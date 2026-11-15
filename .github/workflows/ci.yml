@@ -1,0 +1,39 @@
+name: ci
+on: [push, pull_request]
+permissions: { contents: read }
+jobs:
+  portable:
+    # Everything that is platform-neutral: core runtime, tests, drill, Python tools.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '10.0.x' }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r ml/requirements.txt pytest cryptography
+      - run: python -m pytest -q tests/python
+      - run: dotnet run --project tests/Hannibal.Core.Tests -c Release
+      - run: dotnet run --project tests/Hannibal.SmokeTests -c Release
+      - run: dotnet run --project src/Hannibal.Simulator -c Release -- drill-out
+      - run: dotnet build src/Hannibal.Windows -c Release   # type-checks the Windows layer
+      - uses: actions/upload-artifact@v4
+        with: { name: drill-snapshot, path: drill-out/snapshot.json }
+
+  windows:
+    # Builds the Windows-only projects (ETW collectors, services, WPF dashboard).
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '10.0.x' }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install cryptography
+      # CI uses a throwaway signing key. Release bundles are signed offline, never in CI.
+      - run: python tools/bootstrap_beta_signing.py --out ci-signing --days 2
+      - run: dotnet build HannibalProtocol.sln -c Release
+      - run: dotnet run --project tests/Hannibal.Core.Tests -c Release
+      - run: pwsh deploy/publish.ps1
+      - uses: actions/upload-artifact@v4
+        with: { name: hannibal-beta-unsigned-ci-build, path: artifacts/ }

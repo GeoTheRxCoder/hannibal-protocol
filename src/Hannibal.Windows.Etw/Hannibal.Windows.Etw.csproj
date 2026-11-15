@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- NOT COMPILED in the authoring environment (no NuGet access there).
+       Build and validate on Windows 11; see docs/BETA_TEST_PLAN.md section 3. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- 4.0.0 was the current release when this was written; verify the API on first build. -->
+    <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="4.0.0" />
+    <ProjectReference Include="../Hannibal.Windows/Hannibal.Windows.csproj" />
+  </ItemGroup>
+</Project>
