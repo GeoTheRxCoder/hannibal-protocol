@@ -1,0 +1,2 @@
+# Signed test fixtures are verified byte-for-byte; never convert their line endings.
+tests/fixtures/xsig/** -text
